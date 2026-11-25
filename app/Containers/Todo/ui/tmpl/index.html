@@ -1,0 +1,19 @@
+{{define "content"}}
+<h1>Мои задачи</h1>
+
+<form action="/todo/create" method="POST">
+    <input type="text" name="task" placeholder="Новая задача..." required style="width: 70%; padding: 5px;">
+    <button type="submit" style="padding: 5px 10px;">Добавить</button>
+</form>
+
+<ul>
+    {{range .}}
+    <li class="{{if .Completed}}done{{end}}">
+        <span>{{.Task}}</span>
+        <form action="/todo/delete/{{.ID}}" method="POST" style="margin:0;">
+            <button type="submit" style="color: red; border: none; background: none; cursor: pointer;">✕</button>
+        </form>
+    </li>
+    {{end}}
+</ul>
+{{end}}
