@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"Rudra-Go/app/Containers/Todo/controller"
+	ship "Rudra-Go/app/Ship"
 )
 
 type Config struct {
@@ -29,7 +30,9 @@ func (t *TodoContainer) Name() string {
 }
 
 func (t *TodoContainer) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", t.ctrl.IndexAction)
-	mux.HandleFunc("/todo/create", t.ctrl.CreateAction)
-	mux.HandleFunc("/todo/delete/", t.ctrl.DeleteAction)
+	mux.HandleFunc("/", ship.ExactHandler("/", t.ctrl.IndexAction))
+	mux.HandleFunc("/todo/", ship.ExactHandler("/todo/", t.ctrl.IndexAction))
+	mux.HandleFunc("/todo/create", ship.ExactHandler("/todo/create", t.ctrl.CreateAction))
+	mux.HandleFunc("/todo/delete/", ship.PrefixHandler("/todo/delete/", t.ctrl.DeleteAction))
+	mux.HandleFunc("/todo/hello", ship.ExactHandler("/todo/hello", t.ctrl.HelloAction))
 }
