@@ -6,26 +6,25 @@ import (
 )
 
 // ExactHandler — для маршрутов без параметров.
-// Проверяет точное совпадение пути. Если путь не совпадает — возвращает 404.
-func ExactHandler(path string, handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+// Принимает и возвращает http.Handler для единообразия с middleware.
+func ExactHandler(path string, handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != path {
 			http.NotFound(w, r)
 			return
 		}
-		handler(w, r)
-	}
+		handler.ServeHTTP(w, r)
+	})
 }
 
-// PrefixHandler — для маршрутов с параметрами (например, /todo/delete/123).
-// Проверяет, что путь начинается с префикса.
-// Handler сам извлекает параметр из r.URL.Path.
-func PrefixHandler(prefix string, handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+// PrefixHandler — для маршрутов с параметрами.
+// Принимает и возвращает http.Handler для единообразия с middleware.
+func PrefixHandler(prefix string, handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(r.URL.Path, prefix) {
 			http.NotFound(w, r)
 			return
 		}
-		handler(w, r)
-	}
+		handler.ServeHTTP(w, r)
+	})
 }

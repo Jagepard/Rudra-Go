@@ -3,17 +3,10 @@ package todo
 import (
 	"net/http"
 
+	"Rudra-Go/app/Containers/Auth/middleware"
 	"Rudra-Go/app/Containers/Todo/controller"
-	ship "Rudra-Go/app/Ship"
+	"Rudra-Go/app/Ship"
 )
-
-type Config struct {
-	MaxTasks int
-}
-
-var Cfg = Config{
-	MaxTasks: 100,
-}
 
 type TodoContainer struct {
 	ctrl *controller.TodoController
@@ -30,9 +23,16 @@ func (t *TodoContainer) Name() string {
 }
 
 func (t *TodoContainer) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("/", ship.ExactHandler("/", t.ctrl.IndexAction))
-	mux.HandleFunc("/todo/", ship.ExactHandler("/todo/", t.ctrl.IndexAction))
-	mux.HandleFunc("/todo/create", ship.ExactHandler("/todo/create", t.ctrl.CreateAction))
-	mux.HandleFunc("/todo/delete/", ship.PrefixHandler("/todo/delete/", t.ctrl.DeleteAction))
-	mux.HandleFunc("/todo/hello", ship.ExactHandler("/todo/hello", t.ctrl.HelloAction))
+	protectedMux := http.NewServeMux()
+
+	protectedMux.Handle("/todo/", ship.ExactHandler("/todo/",
+		http.HandlerFunc(t.ctrl.IndexAction)))
+	protectedMux.Handle("/todo/create", ship.ExactHandler("/todo/create",
+		http.HandlerFunc(t.ctrl.CreateAction)))
+	protectedMux.Handle("/todo/delete/", ship.PrefixHandler("/todo/delete/",
+		http.HandlerFunc(t.ctrl.DeleteAction)))
+	protectedMux.Handle("/todo/hello", ship.ExactHandler("/todo/hello",
+		http.HandlerFunc(t.ctrl.HelloAction)))
+
+	mux.Handle("/todo/", middleware.AuthRequired(protectedMux))
 }

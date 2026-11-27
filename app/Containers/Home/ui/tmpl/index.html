@@ -1,0 +1,27 @@
+{{define "content"}}
+<h1>Добро пожаловать в Rudra-Go</h1>
+
+{{range .FlashErrors}}
+<div class="flash flash-error">{{.}}</div>
+{{end}}
+
+{{range .FlashSuccesses}}
+<div class="flash flash-success">{{.}}</div>
+{{end}}
+
+{{if .IsAuth}}
+    <p>Вы авторизованы. ID пользователя: <strong>{{.UserID}}</strong></p>
+{{else}}
+    <p>Вы не авторизованы. <a href="/auth/login">Войдите</a> или <a href="/auth/register">зарегистрируйтесь</a>.</p>
+{{end}}
+
+<h2>Доступные разделы</h2>
+<ul>
+    <li><a href="/todo/">📋 Список задач</a> — управление задачами</li>
+    <li><a href="/todo/hello">👋 Hello World</a> — тестовая страница</li>
+</ul>
+
+<p style="color: #888; font-size: 0.9rem;">
+    Rudra-Go: толстые контроллеры, сырой SQL, ноль магии.
+</p>
+{{end}}
